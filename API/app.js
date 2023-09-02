@@ -9,19 +9,28 @@ app.listen(port);
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    //hacer la consulta sql
-    //devolver el json
+    //todo
+});
+
+app.get('/users', (req, res) => {
     executeQuery('SELECT * FROM E01_CLIENTE')
-    .then( (result) => res.json(result) )
-    .catch( (result) => res.status(404));
-    
-    
+        .then( (result) => res.json(result) )
 });
 
 app.get('/users/:id', (req, res) => {
-    //do things
     const {id} = req.params;
+
+    executeQuery('SELECT * FROM E01_CLIENTE WHERE nro_cliente = ?', id)
+        .then( (result) => res.json(result) )
+});
+
+app.post('/users', (req, res) => {
+    //todo
 })
+
+app.use((req, res) => {
+    res.status(404).end()
+});
 
 // To catch Ctrl + C
 process.on('SIGINT', function() {
