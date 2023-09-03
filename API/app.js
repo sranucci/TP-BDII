@@ -26,7 +26,20 @@ app.get('/users/:id', (req, res) => {
 
 app.post('/users', (req, res) => {
     //todo
-})
+    const {nro_cliente, nombre, apellido, direccion, activo} = req.body;
+    /*
+    nro_cliente int         not null
+        primary key,
+    nombre      varchar(45) not null,
+    apellido    varchar(45) not null,
+    direccion   varchar(45) not null,
+    activo      smallint    not null
+    */
+    executeQuery('INSERT INTO E01_CLIENTE VALUES (?,?,?,?,?)',nro_cliente, nombre, apellido, direccion, activo)
+    .then(response => res.status(200).end())
+    .catch(err => console.log(err));
+    
+});
 
 app.use((req, res) => {
     res.status(404).end()
