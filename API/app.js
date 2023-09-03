@@ -52,7 +52,19 @@ app.post("/products", (req, res) => {
    executeQuery('INSERT INTO E01_PRODUCTO values (?,?,?,?,?,?)', codigo_producto, marca, nombre, descripcion, precio, stock)
    .then(response => res.status(200).end())
    .catch(err => console.log(err));
-})
+});
+
+
+app.put("/products/:id", (req,res) => {
+    
+    const oldId = parseInt(req.params.id);
+    const { codigo_producto, marca, nombre, descripcion, precio, stock} = req.body;
+
+    executeQuery("UPDATE E01_PRODUCTO SET codigo_producto = ?, marca = ?, nombre = ?, descripcion = ?, precio = ?, stock = ? "+
+    "WHERE codigo_producto = ?",codigo_producto,marca,nombre,descripcion,precio,stock,oldId)
+    .then(response => res.status(200).end())
+    .catch(err => console.log(err));
+});
 
 
 app.use((req, res) => {
