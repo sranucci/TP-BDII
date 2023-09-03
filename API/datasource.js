@@ -11,10 +11,10 @@ const executeQuery = async (query, ...values) => {
 
 
     return new Promise( (resolve, reject) => { pool.query(query, [...values], (err, rows, fields) => {
-        //...
-        if (err)
-            reject(err);
-        //
+        if (err){
+          reject(err);
+        }
+        
         resolve(rows);
 
       }) });    
