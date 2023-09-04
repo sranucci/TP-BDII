@@ -1,5 +1,5 @@
-create database mri2022bd2;
-use mri2022bd2;
+# create database mri2022bd2;
+# use mri2022bd2;
 
 --
 
