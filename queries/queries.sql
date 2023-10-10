@@ -8,7 +8,6 @@ SELECT DISTINCT nro_cliente, nombre, apellido, direccion, activo
 FROM E01_CLIENTE NATURAL JOIN E01_FACTURA;
 
 -- ex3
-EXPLAIN ANALYZE
 SELECT * FROM E01_CLIENTE
 WHERE nro_cliente NOT IN (
     SELECT nro_cliente FROM E01_FACTURA
@@ -20,7 +19,7 @@ FROM E01_PRODUCTO NATURAL JOIN E01_DETALLE_FACTURA;
 
 -- ex5
 SELECT nro_cliente, nombre, apellido, direccion, activo, nro_telefono
-FROM E01_CLIENTE NATURAL JOIN E01_TELEFONO;
+FROM E01_CLIENTE LEFT JOIN E01_TELEFONO ON E01_CLIENTE.nro_cliente = E01_TELEFONO.nro_cliente;
 
 -- ex6
 SELECT E01_CLIENTE.nro_cliente, nombre, apellido, direccion, activo, count(E01_FACTURA.nro_factura) AS facturas
