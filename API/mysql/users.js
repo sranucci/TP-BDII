@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {executeQuery} = require('../datasource')
+const {executeQuery} = require('./datasource') //todo
 
 router.get('/', (req, res) => {
     executeQuery('SELECT * FROM E01_CLIENTE')
@@ -43,9 +43,5 @@ router.put('/:id', (req, res) => {
         .then(response => res.status(200).end())
         .catch(err => console.log(err));
 });
-
-
-
-
 
 module.exports = router

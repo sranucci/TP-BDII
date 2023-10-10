@@ -1,44 +1,41 @@
 const dotenv = require("dotenv").config();
 const express = require('express');
-const {destroyPool} = require('./datasource')
+const {destroyPool} = require('./mysql/datasource')
+const mysqlRouter = require('./mysql/router');
+const mongodbRouter = require('./mongodb/router');
 
-// Import the routers
-const usersRouter = require("./routes/users");
-const productsRouter = require("./routes/products");
+const app = express();
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
-const app = express()
-const port = parseInt(process.env.PORT || "3000");
-
+// Middlewares
 app.use(express.json());
+app.use(logger);
 
-// Middleware for logging incoming requests
-app.use((req, res, next) => {
+// Routers
+app.use('/mysql', mysqlRouter);
+app.use('/mongo', mongodbRouter);
+
+// If the request didn't match any routes
+app.use(handle404);
+
+process.on('SIGINT', shutDownServer);
+
+app.listen(port, () => console.log(`server started listening on port ${port}`));
+
+function logger(req, res, next) {
     console.log(`Received ${req.method} request at ${req.url}`);
-    
-    // Log the HTTP status code
     res.on('finish', () => {
       console.log(`Response status code: ${res.statusCode}`);
     });
-  
     next();
-});
+}
 
-// Use the router modules
-app.use('/users', usersRouter);
-app.use('/products', productsRouter);
-
-  
-app.use((req, res) => {
+function handle404(req, res) {
     res.status(404).json({Error: "The resource doesn't exist"}).end();
-});
+}
 
-// To catch Ctrl + C
-process.on('SIGINT', function() {
+function shutDownServer() {
     console.log("Shutting off server");
-
     destroyPool();
     process.exit();
-});
-
-app.listen(port);
-
+}

@@ -1,2 +1,3 @@
 .idea
-/*/node_modules/
+.fleet
+/API/node_modules/
