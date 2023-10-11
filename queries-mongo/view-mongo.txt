@@ -1,0 +1,24 @@
+db.createView(
+    "facturasOrdenadas",
+    "E01_FACTURA",
+    [ {$sort: {fecha: 1}} ]
+);
+
+db.createView(
+    "productosNoFacturados",
+    "E01_PRODUCTO",
+    [
+    {
+        $lookup: {
+            from: "E01_DETALLE_FACTURA",
+            localField: "codigo_producto",
+            foreignField: "codigo_producto",
+            as: "invoiceDetails"
+        }
+    },
+    {
+        $match: {
+            invoiceDetails: { $size: 0 }
+        }
+    }
+    ]);
