@@ -81,60 +81,45 @@ db.E01_CLIENTE.aggregate([
 
 
 // ejercicio 7
-db.E01_CLIENTE.find({
-    nombre: 'Pandora',
-    apellido: 'Tate'
-}).forEach(function(cliente) {
-    db.E01_FACTURA.find({
-        cliente_id: cliente._id
-    }, {
-        _id: 0,
-        nro_factura: 1
-    }).forEach(function(factura) {
-        print(factura.nro_factura);
-    });
-});
+db.E01_FACTURA.find({ nro_cliente: db.E01_CLIENTE.findOne({nombre: "Pandora", apellido: "Tate"}).nro_cliente}, {nro_cliente: 0, _id: 0})
 
 // ejercicio 8
 db.E01_FACTURA.aggregate([
-    {
-        $lookup: {
-            from: "E01_DETALLE_FACTURA",
-            localField: "factura_id",
-            foreignField: "_id",
-            as: "detalle_factura"
-        }
-    },
-    {
-        $unwind: "$detalle_factura"
-    },
-    {
-        $lookup: {
-            from: "E01_PRODUCTO",
-            localField: "detalle_factura.producto_id",
-            foreignField: "_id",
-            as: "producto"
-        }
-    },
-    {
-        $unwind: "$producto"
-    },
-    {
-        $match: {
-            "producto.marca": "In Faucibus Inc."
-        }
-    },
-    {
-        $group: {
-            _id: "$nro_factura"
-        }
-    },
-    {
-        $project: {
-            _id: 0,
-            nro_factura: "$_id"
-        }
+  {
+    $lookup: {
+      from: "E01_DETALLE_FACTURA",
+      localField: "nro_factura",
+      foreignField: "nro_factura",
+      as: "factura_detalle"
     }
+  },
+  {
+    $lookup: {
+      from: "E01_PRODUCTO",
+      localField: "factura_detalle.codigo_producto",
+      foreignField: "codigo_producto",
+      as: "productos"
+    }
+  },
+  {
+    $match: {
+      "productos.marca": "In Faucibus Inc."
+    }
+  }
+])
+
+
+// ejercicio 9
+db.E01_CLIENTE.find()
+
+// ejercicio 10
+db.E01_FACTURA.aggregate([
+    {$group: { _id: "$nro_cliente", gasto: { $sum: "$total_con_iva" } } },
+    {$lookup: {
+        from: "E01_CLIENTE",
+        foreignField: "nro_cliente",
+        localField: "_id", as: "cliente"
+        }},
+    {$unwind: "$cliente"},
+    {$project: {gasto: 1, nombre: "$cliente.nombre" , apellido:"$cliente.apellido" }}
 ]);
-
-
