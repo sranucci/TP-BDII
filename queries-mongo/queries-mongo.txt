@@ -53,7 +53,8 @@ db.E01_PRODUCTO.aggregate([
 }
 ]);
 
-
+//ejercicio 5
+db.E01_CLIENTE.find({})
 
 //ejercicio 6
 db.E01_CLIENTE.aggregate([
