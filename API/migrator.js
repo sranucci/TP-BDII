@@ -42,7 +42,6 @@ const doMigration = async () => {
                 client.telefonos = telefonos;
             }
         }
-        console.log(sqlClients);
         const result = await db.collection("E01_CLIENTE").insertMany(sqlClients);
         await db.collection("E01_CLIENTE").createIndex({nro_cliente: 1});
         console.log("Clients Migrated");
