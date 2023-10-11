@@ -18,7 +18,7 @@ SELECT DISTINCT codigo_producto, marca, marca, nombre, descripcion, precio, stoc
 FROM E01_PRODUCTO NATURAL JOIN E01_DETALLE_FACTURA;
 
 -- ex5
-SELECT nro_cliente, nombre, apellido, direccion, activo, nro_telefono
+SELECT E01_CLIENTE.nro_cliente, nombre, apellido, direccion, activo, nro_telefono
 FROM E01_CLIENTE LEFT JOIN E01_TELEFONO ON E01_CLIENTE.nro_cliente = E01_TELEFONO.nro_cliente;
 
 -- ex6
