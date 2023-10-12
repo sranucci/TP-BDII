@@ -22,43 +22,74 @@ const executeQuery = async (query, ...values) => {
     })});
 };
 
+async function performTransaction(client, actions) {
+    const session = client.startSession();
+
+    try {
+
+        session.startTransaction();
+
+        await actions();
+
+        await session.commitTransaction();
+
+    } catch (error) {
+        console.error("Error during transaction: ", error);
+
+        await session.abortTransaction();
+    } finally {
+         await session.endSession();
+    }
+}
+
 const doMigration = async () => {
     const client = await MongoClient.connect(url);
     const db = client.db(dbName);
     const sqlClients = await executeQuery("SELECT distinct * FROM E01_CLIENTE c");
     
     try {
-        await db.createCollection("E01_CLIENTE");
-        await db.createCollection("E01_FACTURA");
-        await db.createCollection("E01_DETALLE_FACTURA");
-        await db.createCollection("E01_PRODUCTO");
-        
-        for (let client of sqlClients) {
-            let telefonos = await executeQuery("SELECT * FROM E01_TELEFONO WHERE nro_cliente = ?",client.nro_cliente);
 
-            telefonos.forEach( telefono => delete telefono.nro_cliente);
+        await performTransaction(client, async () => {
+            await db.createCollection("E01_CLIENTE");
+            await db.createCollection("E01_FACTURA");
+            await db.createCollection("E01_DETALLE_FACTURA");
+            await db.createCollection("E01_PRODUCTO");
 
-            if (telefonos.length !== 0){
-                client.telefonos = telefonos;
+            for (let client of sqlClients) {
+                let telefonos = await executeQuery("SELECT * FROM E01_TELEFONO WHERE nro_cliente = ?",client.nro_cliente);
+
+                telefonos.forEach( telefono => delete telefono.nro_cliente);
+
+                if (telefonos.length !== 0){
+                    client.telefonos = telefonos;
+                }
             }
-        }
-        const result = await db.collection("E01_CLIENTE").insertMany(sqlClients);
-        await db.collection("E01_CLIENTE").createIndex({nro_cliente: 1});
-        console.log("Clients Migrated");
+            const result = await db.collection("E01_CLIENTE").insertMany(sqlClients);
+            await db.collection("E01_CLIENTE").createIndex({nro_cliente: 1});
+            console.log("Clients Migrated");
 
-        const sqlFacturas = await executeQuery("SELECT * FROM E01_FACTURA");
-        await db.collection("E01_FACTURA").insertMany(sqlFacturas);
-        await db.collection("E01_FACTURA").createIndex({nro_factura: 1});
-        console.log("Facturas Migrated");
+            const sqlFacturas = await executeQuery("SELECT * FROM E01_FACTURA");
+            await db.collection("E01_FACTURA").insertMany(sqlFacturas);
+            await db.collection("E01_FACTURA").createIndex({nro_factura: 1});
+            console.log("Facturas Migrated");
 
-        const sqlDetalleFactura = await executeQuery("SELECT * FROM E01_DETALLE_FACTURA");
-        await db.collection("E01_DETALLE_FACTURA").insertMany(sqlDetalleFactura);
-        console.log("Facturas Details Migrated");
+            const sqlDetalleFactura = await executeQuery("SELECT * FROM E01_DETALLE_FACTURA");
+            await db.collection("E01_DETALLE_FACTURA").insertMany(sqlDetalleFactura);
+            console.log("Facturas Details Migrated");
 
-        const sqlProducto = await executeQuery("SELECT * FROM E01_PRODUCTO");
-        await db.collection("E01_PRODUCTO").insertMany(sqlProducto);
-        await db.collection("E01_PRODUCTO").createIndex({codigo_producto: 1});
-        console.log("Products Migrated");
+            const sqlProducto = await executeQuery("SELECT * FROM E01_PRODUCTO");
+            await db.collection("E01_PRODUCTO").insertMany(sqlProducto);
+            await db.collection("E01_PRODUCTO").createIndex({codigo_producto: 1});
+            console.log("Products Migrated");
+
+            await db.collection("E01_CLIENTE").createIndex({nro_cliente: 1}, {unique: true, name: "cliente_nro_cli_idx"});
+
+            await db.collection("E01_PRODUCTO").createIndex({codigo_producto: 1}, {unique: true, name: "producto_codigo_idx"});
+
+            await db.collection("E01_DETALLE_FACTURA").createIndex({nro_factura: 1, nro_item: 1}, {unique: true, name: "detalle_factura_idx"});
+
+            await db.collection("E01_FACTURA").createIndex({nro_factura: 1}, {unique: true, name: "factura_nro_factura_idx"});
+        });
         
     } catch (err) {
         console.error("Migration Failed", err);

@@ -21,4 +21,4 @@ db.createView(
             invoiceDetails: { $size: 0 }
         }
     }
-    ]);
+]);

@@ -17,7 +17,7 @@ db.E01_CLIENTE.aggregate([{
         foreignField: "nro_cliente",
         as : "matched"
     }
-},  { $match : { matched :  { $ne : [] }}}, { $project : { nro_cliente: 1, nombre : 1}}]);
+},{ $match : { matched :  { $ne : [] }}}, { $project : { nro_cliente: 1, nombre : 1}}]);
 
 //ejercicio 3
 db.E01_CLIENTE.aggregate([{

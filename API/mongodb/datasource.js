@@ -10,12 +10,12 @@ let func = async () => {
 }
 
 
-async function getdb(databaseName){
+async function getdb(){
     if (client){
-        return client.db(databaseName);
+        return client.db(dbName);
     }
     client = await MongoClient.connect(url);
-    return client.db(databaseName);
+    return client.db(dbName);
 }
 
 
