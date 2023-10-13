@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const {getdb}= require('./datasource')
 
-
-
-
 //todo error handling
 
 //todo api methods
