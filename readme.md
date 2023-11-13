@@ -3,29 +3,30 @@
 ## MySQL docker container
 Create the container:
 ```shell
-docker run --name bd2_mysql_api -e MYSQL_ROOT_PASSWORD=mysql -p 3306:3306 -d mysql
+> docker run --name bd2_mysql_api -e MYSQL_ROOT_PASSWORD=mysql -p 3306:3306 -d mysql
 ```
-Credentials of the container: `root:mysql`. To open a mysql shell, execute:
+Credentials of the container: `root:mysql`. 
+(optional) To open a mysql shell, execute:
 ```shell
-docker exec -it bd2_mysql_api mysql -u root -p
+> docker exec -it bd2_mysql_api mysql -u root -p
 ```
 and enter the password `mysql`.
 
 ## MongoDB docker container
 Create the container:
 ```shell
-docker run --name bd2_mongodb_api -d -p 27017:27017 mongodb/mongodb-community-server
+> docker run --name bd2_mongodb_api -d -p 27017:27017 mongodb/mongodb-community-server
 ```
 
-To open a mongo shell, execute:
+(optional) To open a mongo shell, execute:
 ```shell
-docker exec -it bd2_mongo_api mongosh
+> docker exec -it bd2_mongo_api mongosh
 ```
 
 ## To install necessary dependencies
 ```shell
-sudo apt install nodejs npm
-cd API && npm install
+> sudo apt install nodejs npm
+> cd API && npm install
 ```
 
 ## To do the migration from MySQL to Mongo
