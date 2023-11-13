@@ -76,6 +76,8 @@ const doMigration = async () => {
             for (const facturaKey in sqlFacturas) {
                 const factura = sqlFacturas[facturaKey]
                 const sqlDetallesFactura = await executeQuery("SELECT * FROM E01_DETALLE_FACTURA WHERE nro_factura = ? ORDER BY nro_item ASC", factura.nro_factura)
+                
+                sqlDetallesFactura.forEach(fact => delete fact.nro_factura);
 
                 await db.collection("E01_FACTURA").updateOne({nro_factura: factura.nro_factura}, {
                     '$push': {
@@ -118,6 +120,4 @@ const doMigration = async () => {
 }
 
 doMigration().then(() => console.log("Migration Finished"));
-
-
 
