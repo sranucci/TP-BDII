@@ -17,10 +17,8 @@
 
 
 
--- 
-
--- TABLE: E01_CLIENTE 
-
+--
+-- TABLE: E01_CLIENTE
 --
 
 
