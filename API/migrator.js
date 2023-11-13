@@ -95,7 +95,7 @@ const doMigration = async () => {
             });
 
             await db.collection("E01_CLIENTE").createIndex({'telefonos.codigo_area': 1, 'telefonos.nro_telefono': 1}, {
-                unique: true,
+                unique: false,
                 name: "cliente_telefono_idx"
             });
 
