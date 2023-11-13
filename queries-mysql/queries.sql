@@ -1,6 +1,8 @@
+USE mri2022bd2;
+
 -- ex1
-SELECT nro_cliente, nombre, apellido
-FROM E01_CLIENTE
+SELECT c.nro_cliente, t.nro_telefono
+FROM E01_CLIENTE c NATURAL JOIN E01_TELEFONO t
 WHERE nombre = 'Wanda' AND apellido = 'Baker';
 
 -- ex2

@@ -9,6 +9,8 @@
 
 // ejercicio 1
 db.E01_CLIENTE.find({nombre:"Wanda",apellido:"Baker"},{telefonos: 1, nro_cliente: 1 });
+
+
 // ejercicio 2
 db.E01_CLIENTE.aggregate([{
     $lookup : {
@@ -29,7 +31,7 @@ db.E01_CLIENTE.aggregate([{
     }
 },  { $match : { matched :  { $eq : [] }}}, { $project : { nro_cliente: 1, nombre : 1}}]);
 
-//ejercicio 4
+//ejercicio 4 TODO NOT WORKING
 db.E01_PRODUCTO.aggregate([
 {
     $lookup : {
@@ -83,7 +85,7 @@ db.E01_CLIENTE.aggregate([
 // ejercicio 7
 db.E01_FACTURA.find({ nro_cliente: db.E01_CLIENTE.findOne({nombre: "Pandora", apellido: "Tate"}).nro_cliente}, {nro_cliente: 0, _id: 0})
 
-// ejercicio 8
+// ejercicio 8 TODO NOT WORKING
 db.E01_FACTURA.aggregate([
   {
     $lookup: {

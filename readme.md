@@ -28,12 +28,20 @@ sudo apt install nodejs npm
 cd API && npm install
 ```
 
+## To do the migration from MySQL to Mongo
+```shell
+node ./API/migrator
+```
+
 ## To run the API
 ```shell
 node ./API/app
 ```
 
-## To do the migration from MySQL to Mongo
-```shell
-node ./API/migrator
-```
+## About the API
+The possible endpoints are:
+- /{database}/users/ -> GET, POST
+- /{database}/users/:id -> GET, PUT, DELETE
+- /{database}/products/ -> POST
+- /{database}/products/:id -> PUT
+Replace `{database}` with `mysql` or `mongo`, depending on the database that you want to use.
