@@ -1,243 +1,94 @@
-# create database mri2022bd2;
-# use mri2022bd2;
-
---
-
--- ER/Studio 8.0 SQL Code Generation
-
--- Project :      01_facturación_x.DM1
-
---
-
--- Date Created : Monday, March 06, 2017 11:18:13
-
--- Target DBMS : IBM DB2 UDB 9.x
-
---
-
-
+create database mri2022bd2;
+use mri2022bd2;
 
 --
 -- TABLE: E01_CLIENTE
 --
-
-
-
 CREATE TABLE E01_CLIENTE(
-
     nro_cliente    INTEGER        NOT NULL,
-
     nombre         VARCHAR(45)    NOT NULL,
-
     apellido       VARCHAR(45)    NOT NULL,
-
     direccion      VARCHAR(45)    NOT NULL,
-
     activo         SMALLINT       NOT NULL,
-
     CONSTRAINT PK_E01_CLIENTE PRIMARY KEY (nro_cliente)
-
-)
-
-;
-
-
-
-
-
-
+);
 
 -- 
-
--- TABLE: E01_DETALLE_FACTURA 
-
+-- TABLE: E01_DETALLE_FACTURA
 --
-
-
-
 CREATE TABLE E01_DETALLE_FACTURA(
-
     nro_factura        INTEGER    NOT NULL,
-
     codigo_producto    INTEGER    NOT NULL,
-
     nro_item           INTEGER    NOT NULL,
-
     cantidad           FLOAT      NOT NULL,
-
     CONSTRAINT PK_E01_DETALLE_FACTURA PRIMARY KEY (nro_factura, codigo_producto)
-
-)
-
-;
-
-
-
-
-
-
+);
 
 -- 
-
--- TABLE: E01_FACTURA 
-
+-- TABLE: E01_FACTURA
 --
-
-
-
 CREATE TABLE E01_FACTURA(
-
     nro_factura      INTEGER    NOT NULL,
-
     fecha            DATE       NOT NULL,
-
     total_sin_iva    DOUBLE PRECISION     NOT NULL,
-
     iva              DOUBLE PRECISION     NOT NULL,
-
     total_con_iva    DOUBLE PRECISION,
-
     nro_cliente      INTEGER    NOT NULL,
-
     CONSTRAINT PK_E01_FACTURA PRIMARY KEY (nro_factura)
-
-)
-
-;
-
-
-
-
-
-
-
--- 
-
--- TABLE: E01_PRODUCTO 
+);
 
 --
-
-
-
+-- TABLE: E01_PRODUCTO
+--
 CREATE TABLE E01_PRODUCTO(
-
     codigo_producto    INTEGER        NOT NULL,
-
     marca              VARCHAR(45)    NOT NULL,
-
     nombre             VARCHAR(45)    NOT NULL,
-
     descripcion        VARCHAR(45)    NOT NULL,
-
     precio             FLOAT          NOT NULL,
-
     stock              INTEGER        NOT NULL,
-
     CONSTRAINT PK_E01_PRODUCTO PRIMARY KEY (codigo_producto)
-
-)
-
-;
-
-
-
-
-
-
+);
 
 -- 
-
--- TABLE: E01_TELEFONO 
-
+-- TABLE: E01_TELEFONO
 --
-
-
-
 CREATE TABLE E01_TELEFONO(
-
     codigo_area     INTEGER    NOT NULL,
-
     nro_telefono    INTEGER    NOT NULL,
-
     tipo            CHAR(1)    NOT NULL,
-
     nro_cliente     INTEGER    NOT NULL,
-
     CONSTRAINT PK_E01_TELEFONO PRIMARY KEY (codigo_area, nro_telefono)
-
-)
-
-;
-
-
-
-
-
-
-
--- 
-
--- TABLE: E01_DETALLE_FACTURA 
+);
 
 --
-
-
-
+-- TABLE: E01_DETALLE_FACTURA
+--
 ALTER TABLE E01_DETALLE_FACTURA ADD CONSTRAINT FK_E01_DETALLE_FACTURA_PRODUCTO
     FOREIGN KEY (codigo_producto)
-
     REFERENCES E01_PRODUCTO(codigo_producto)
-
 ;
-
 
 
 ALTER TABLE E01_DETALLE_FACTURA ADD CONSTRAINT FK_E01_DETALLE_FACTURA_FACTURA 
-
     FOREIGN KEY (nro_factura)
-
     REFERENCES E01_FACTURA(nro_factura)
-
 ;
 
-
-
-
-
 -- 
-
--- TABLE: E01_FACTURA 
-
+-- TABLE: E01_FACTURA
 --
-
-
-
-ALTER TABLE E01_FACTURA ADD CONSTRAINT FK_E01_FACTURA_CLIENTE 
-
+ALTER TABLE E01_FACTURA ADD CONSTRAINT FK_E01_FACTURA_CLIENTE
     FOREIGN KEY (nro_cliente)
-
     REFERENCES E01_CLIENTE(nro_cliente)
-
 ;
 
-
-
-
-
 -- 
-
--- TABLE: E01_TELEFONO 
-
+-- TABLE: E01_TELEFONO
 --
-
-
-
-ALTER TABLE E01_TELEFONO ADD CONSTRAINT FK_E01_TELEFONO_CLIENTE 
-
+ALTER TABLE E01_TELEFONO ADD CONSTRAINT FK_E01_TELEFONO_CLIENTE
     FOREIGN KEY (nro_cliente)
-
     REFERENCES E01_CLIENTE(nro_cliente)
-
 ;
 
 
@@ -3054,12 +2905,11 @@ INSERT INTO E01_DETALLE_FACTURA (nro_factura,codigo_producto,nro_item,cantidad) 
 INSERT INTO E01_DETALLE_FACTURA (nro_factura,codigo_producto,nro_item,cantidad) VALUES (251,45,2894,45);
 
 UPDATE E01_FACTURA
-SET 
+SET
     total_sin_iva = 0
 WHERE
     nro_factura < 1000;
-    
-    DELIMITER $$
+DELIMITER $$
 CREATE PROCEDURE calcular_precios () 
 begin 
 declare v_nro_factura integer default 0;
@@ -3075,7 +2925,7 @@ declare cFacturas cursor for select total_sin_iva from E01_FACTURA where nro_fac
 declare cProducto cursor for select precio from E01_PRODUCTO where codigo_producto = v_codigo_producto;
 declare cDetalleFactura cursor for select codigo_producto, cantidad, nro_factura from E01_DETALLE_FACTURA;
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin=1;
-open cDetalleFactura; 
+open cDetalleFactura;
   get_facturas: LOOP
     FETCH cDetalleFactura INTO v_codigo_producto,v_cantidad,v_nro_factura;
     IF fin = 1 THEN
@@ -3083,7 +2933,7 @@ open cDetalleFactura;
     END IF;
 	open cProducto;
 	FETCH cProducto INTO v_precio;
-	IF v_cantidad>10 THEN 
+	IF v_cantidad>10 THEN
 		SET v_precio_final=v_precio*0.9*v_cantidad;
 		elseif v_cantidad>5 THEN
 			SET v_precio_final=v_precio*0.95*v_cantidad;
@@ -3096,7 +2946,7 @@ open cDetalleFactura;
 	FETCH cFacturas INTO v_total_sin_iva;
 	SET v_precio_final = v_precio_final + v_total_sin_iva;
 	UPDATE E01_FACTURA
-SET 
+SET
     total_sin_iva = v_precio_final
 WHERE
     nro_factura = v_nro_factura;
@@ -3105,19 +2955,19 @@ WHERE
   CLOSE cDetalleFactura;
 	open cFacturasIVA;
     SET fin=0;
-get_facturas_iva: LOOP	
+get_facturas_iva: LOOP
 	fetch cFacturasIVA into v_nro_factura,v_total_sin_iva;
 	IF fin = 1 THEN
        LEAVE get_facturas_iva;
     END IF;
 	set v_total_con_iva = v_total_sin_iva + v_total_sin_iva*0.21;
 	UPDATE E01_FACTURA
-SET 
+SET
     total_con_iva = v_total_con_iva
 WHERE
     nro_factura = v_nro_factura;
 	END LOOP get_facturas_iva;
 	CLOSE cFacturasIVA;
  END $$
- DELIMITER ;
-call calcular_precios () ;
+DELIMITER;
+call calcular_precios();
