@@ -31,19 +31,19 @@ db.E01_CLIENTE.aggregate([{
     }
 },  { $match : { matched :  { $eq : [] }}}, { $project : { nro_cliente: 1, nombre : 1}}]);
 
-//ejercicio 4 TODO NOT WORKING
+//ejercicio 4
 db.E01_PRODUCTO.aggregate([
 {
     $lookup : {
-        from : "E01_DETALLE_FACTURA",
         localField: "codigo_producto",
-        foreignField: "codigo_producto",
+        from : "E01_FACTURA",
+        foreignField: "detalle.codigo_producto",
         as: "matched"
     }
 },
 {
     $match : {
-    matched : { $ne : [] }
+        matched : { $ne : [] }
     }
 },
 {
@@ -54,6 +54,7 @@ db.E01_PRODUCTO.aggregate([
     }
 }
 ]);
+
 
 //ejercicio 5
 db.E01_CLIENTE.find({})
@@ -85,20 +86,12 @@ db.E01_CLIENTE.aggregate([
 // ejercicio 7
 db.E01_FACTURA.find({ nro_cliente: db.E01_CLIENTE.findOne({nombre: "Pandora", apellido: "Tate"}).nro_cliente}, {nro_cliente: 0, _id: 0})
 
-// ejercicio 8 TODO NOT WORKING
+// ejercicio 8
 db.E01_FACTURA.aggregate([
   {
     $lookup: {
-      from: "E01_DETALLE_FACTURA",
-      localField: "nro_factura",
-      foreignField: "nro_factura",
-      as: "factura_detalle"
-    }
-  },
-  {
-    $lookup: {
       from: "E01_PRODUCTO",
-      localField: "factura_detalle.codigo_producto",
+      localField: "detalle.codigo_producto",
       foreignField: "codigo_producto",
       as: "productos"
     }
@@ -107,8 +100,15 @@ db.E01_FACTURA.aggregate([
     $match: {
       "productos.marca": "In Faucibus Inc."
     }
+  },
+  {
+    $project: {
+      "nro_factura": 1,
+      "_id": 0
+    }
   }
-])
+]);
+
 
 
 // ejercicio 9
