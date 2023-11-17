@@ -142,14 +142,19 @@ router.put('/:id', async (req, res) => {
     }
     string = string.concat(" WHERE nro_cliente = ? ")
     values.push(parseInt(id));
-    try {
-        await executeQuery(string, ...values);
-    } catch (e) {
-        console.log(e);
-        res.status(500).end();
-    }
 
     let sqlResult
+
+
+    try {
+        sqlResult = await executeQuery(string, ...values);
+        if (!sqlResult.affectedRows) {
+            return res.status(404).json({error: 'The resource doesn\'t exist'}).end();
+        }
+    } catch (e) {
+        console.log(e);
+        return res.status(500).end();
+    }
 
     for (const telefono of setTelefonos) {
         try {
@@ -159,16 +164,12 @@ router.put('/:id', async (req, res) => {
             } else {
                 await executeQuery('INSERT INTO E01_TELEFONO VALUES (?,?,?,?)', telefono.codigo_area, telefono.nro_telefono, telefono.tipo[0], parseInt(id));
             }
-        } catch (e) {
-            console.log(e);
-            return res.status(500).end();
+        } catch (ignored) {
+            //
         }
     }
-    if (sqlResult) {
-        res.status(200).end();
-    } else {
-        res.sendStatus(404)
-    }
+
+    return res.status(200).end();
 });
 
 module.exports = router
