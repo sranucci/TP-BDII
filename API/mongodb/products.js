@@ -2,6 +2,43 @@ const express = require('express');
 const {getdb} = require("./datasource");
 const router = express.Router();
 
+
+router.get("/:id", async (req,res) => {
+    const {id} = req.params;
+    try {
+        db = await getdb();
+    } catch (err) {
+        return res.status(500).json({error: "DB connection error"}).end();
+    }
+
+    const result = await db.collection("E01_PRODUCTO").find({codigo_producto : parseInt(id)}).toArray();
+
+    if (result.length === 0){
+        return res.status(404).end();
+    }
+
+    return res.status(200).json(result).end();
+});
+
+
+router.get("/",async (req,res) => {
+
+    let db = null;
+    try {
+        db = await getdb();
+    } catch (err) {
+        return res.status(500).json({error: "DB connection error"}).end();
+    }
+
+    const result = await db.collection("E01_PRODUCTO").find({}).toArray();
+
+    if (result.length === 0){
+        return res.status(404).end();
+    }
+    return res.status(200).json(result).end();
+
+})
+
 router.post("/", async (req, res) => {
     const {codigo_producto, marca, nombre, descripcion, precio, stock} = req.body;
 
