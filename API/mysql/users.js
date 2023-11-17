@@ -8,14 +8,11 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', async (req, res, next) => {
-    //todo
-    console.log(req.body)
     let {nro_cliente, nombre, apellido, direccion, activo, telefonos} = req.body;
 
     let setTelefonos;
 
     if (!nro_cliente || !nombre || !apellido || !direccion || !activo) {
-        console.log(nro_cliente, nombre, apellido, direccion, activo)
         return res.status(400).json({error: 'Missing required fields. Please provide values for nro_cliente, nombre, apellido, direccion, and activo.'}).end();
     }
 
@@ -37,8 +34,16 @@ router.post('/', async (req, res, next) => {
     try {
         await executeQuery('INSERT INTO E01_CLIENTE VALUES (?,?,?,?,?)', nro_cliente, nombre, apellido, direccion, activo);
         for (const telefono of setTelefonos) {
-            await executeQuery('INSERT INTO E01_TELEFONO VALUES (?,?,?,?)', telefono.codigo_area, telefono.nro_telefono, telefono.tipo[0], nro_cliente);
-
+            try {
+                await executeQuery('INSERT INTO E01_TELEFONO VALUES (?,?,?,?)', telefono.codigo_area, telefono.nro_telefono, telefono.tipo[0], nro_cliente);
+            } catch (e) {
+                if (e.errno === 1062 || e.errno === 1064 || e.errno === 1452) {
+                    res.status(400).json({error: 'Duplicate key violation. The specified codigo_area and nro_telefono already exists.'});
+                } else {
+                    console.log(e);
+                    res.status(500).end();
+                }
+            }
         }
     } catch (e) {
         console.log(e);
