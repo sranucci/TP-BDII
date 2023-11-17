@@ -81,7 +81,10 @@ router.delete('/:id', async (req, res) => {
     const {id} = req.params;
     await executeQuery('DELETE FROM E01_TELEFONO WHERE nro_cliente = ?', parseInt(id));
     try {
-        await executeQuery('DELETE FROM E01_CLIENTE WHERE nro_cliente = ?', parseInt(id))
+        const sqlResults = await executeQuery('DELETE FROM E01_CLIENTE WHERE nro_cliente = ?', parseInt(id))
+        if (!sqlResults.affectedRows) {
+            return res.status(404).json({error: 'The resource doesn\'t exist'}).end();
+        }
         res.status(200).end();
     } catch (e) {
         console.log(e);
