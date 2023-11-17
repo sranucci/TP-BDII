@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res, next) => {
-    const {nro_cliente, nombre, apellido, direccion, activo, telefonos} = req.body;
+    let {nro_cliente, nombre, apellido, direccion, activo, telefonos} = req.body;
 
     if (!nro_cliente || !nombre || !apellido || !direccion || !activo) {
         return res.status(400).json({error: 'Missing required fields. Please provide values for nro_cliente, nombre, apellido, direccion, and activo.'});
@@ -46,9 +46,7 @@ router.post('/', async (req, res, next) => {
             }
         }
     } else if (!Array.isArray(telefonos)) {
-        return res.status(400).json({
-            error: 'telefonos is expected to be an array'
-        });
+        telefonos = [];
     }
 
 
@@ -97,9 +95,7 @@ router.delete('/:id', async (req, res) => {
     const db = await getdb();
 
     // Validate Input
-    const isValid = Number.isInteger(id);
-
-    if (!isValid) {
+    if (isNaN(id)) {
         return res.status(400).json({error: 'Invalid client ID.'});
     }
 
@@ -124,7 +120,7 @@ router.put('/:id', async (req, res) => {
         return res.status(400).json({error: 'Missing required fields. Please provide values for id.'});
     }
 
-    const {nombre, apellido, direccion, activo, telefonos} = req.body || {};
+    let {nombre, apellido, direccion, activo, telefonos} = req.body || {};
 
     const setData = {};
     if (nombre !== null && nombre !== undefined) {
@@ -155,9 +151,7 @@ router.put('/:id', async (req, res) => {
         }
         setData.telefonos = telefonos;
     } else {
-        return res.status(400).json({
-            error: 'telefonos is expected to be an array'
-        });
+        setData.telefonos = [];
     }
 
     let db = null;

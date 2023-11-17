@@ -11,9 +11,16 @@ router.post('/', (req, res) => {
     //todo
     const {nro_cliente, nombre, apellido, direccion, activo} = req.body;
 
+    if (!nro_cliente || !nombre || !apellido || !direccion || !activo) {
+        return res.status(400).json({error: 'Missing required fields. Please provide values for nro_cliente, nombre, apellido, direccion, and activo.'});
+    }
+
     executeQuery('INSERT INTO E01_CLIENTE VALUES (?,?,?,?,?)',nro_cliente, nombre, apellido, direccion, activo)
         .then(response => res.status(201).end())
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+            res.status(500).end();
+        });
     
 });
 
@@ -39,7 +46,27 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     const {id} = req.params;
     const {nombre, apellido, direccion, activo} = req.body;
-    executeQuery('UPDATE E01_CLIENTE SET nombre = ?, apellido = ?, direccion = ?, activo = ? WHERE nro_cliente = ?', nombre, apellido, direccion, activo, id)
+    const string = "UPDATE E01_CLIENTE SET ";
+    const values = [];
+    if (nombre) {
+        string.concat("nombre = ?, ");
+        values.push(nombre);
+    }
+    if (apellido) {
+        string.concat("apellido = ?, ");
+        values.push(apellido);
+    }
+    if (direccion) {
+        string.concat("direccion = ?, ");
+        values.push(direccion);
+    }
+    if (activo) {
+        string.concat("activo = ?, ");
+        values.push(activo);
+    }
+    string.concat(" WHERE nro_cliente = ? ")
+    values.push(id);
+    executeQuery(string, ...values)
         .then(response => res.status(200).end())
         .catch(err => console.log(err));
 });

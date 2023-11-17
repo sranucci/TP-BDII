@@ -16,7 +16,7 @@ WHERE nro_cliente NOT IN (
     );
 
 -- ex4
-SELECT DISTINCT codigo_producto, marca, marca, nombre, descripcion, precio, stock
+SELECT DISTINCT codigo_producto, marca, nombre, descripcion, precio, stock
 FROM E01_PRODUCTO NATURAL JOIN E01_DETALLE_FACTURA;
 
 -- ex5
