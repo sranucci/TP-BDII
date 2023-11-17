@@ -30,8 +30,7 @@ router.post("/", (req, res) => {
    executeQuery('INSERT INTO E01_PRODUCTO values (?,?,?,?,?,?)', codigo_producto, marca, nombre, descripcion, precio, stock)
    .then(response => res.status(200).end())
    .catch(err => {
-       console.log(err);
-       res.status(500).end();
+       res.status(400).json({error: "Duplicate key violation. The specified codigo_producto already exists."}).end();
    });
 });
 
