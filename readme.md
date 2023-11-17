@@ -43,6 +43,6 @@ node ./API/app
 The possible endpoints are:
 - /{database}/users/ -> GET, POST
 - /{database}/users/:id -> GET, PUT, DELETE
-- /{database}/products/ -> POST
-- /{database}/products/:id -> PUT
+- /{database}/products/ -> POST, GET
+- /{database}/products/:id -> PUT, GET
 Replace `{database}` with `mysql` or `mongo`, depending on the database that you want to use.
