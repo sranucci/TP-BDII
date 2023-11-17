@@ -29,7 +29,10 @@ router.post("/", (req, res) => {
    const { codigo_producto, marca, nombre, descripcion, precio, stock} = req.body;
    executeQuery('INSERT INTO E01_PRODUCTO values (?,?,?,?,?,?)', codigo_producto, marca, nombre, descripcion, precio, stock)
    .then(response => res.status(200).end())
-   .catch(err => console.log(err));
+   .catch(err => {
+       console.log(err);
+       res.status(500).end();
+   });
 });
 
 
@@ -41,7 +44,10 @@ router.put("/:id", (req,res) => {
     executeQuery("UPDATE E01_PRODUCTO SET codigo_producto = ?, marca = ?, nombre = ?, descripcion = ?, precio = ?, stock = ? "+
     "WHERE codigo_producto = ?",codigo_producto,marca,nombre,descripcion,precio,stock,oldId)
     .then(response => res.status(200).end())
-    .catch(err => console.log(err));
+    .catch(err => {
+        console.log(err);
+        res.status(500).end();
+    });
 });
 
 
