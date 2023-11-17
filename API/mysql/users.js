@@ -46,9 +46,14 @@ router.post('/', async (req, res, next) => {
             }
         }
     } catch (e) {
-        console.log(e);
-        res.status(500).end();
+        if (e.errno === 1062 || e.errno === 1064 || e.errno === 1452) {
+            res.status(400).json({error: 'Duplicate key violation. The specified nro_cliente already exists.'});
+        } else {
+            console.log(e);
+            res.status(500).end();
+        }
     }
+
     res.status(201).end();
 });
 
@@ -157,8 +162,11 @@ router.put('/:id', async (req, res) => {
             res.status(500).end();
         }
     }
-
-    res.status(200).end();
+    if (sqlResult) {
+        res.status(200).end();
+    } else {
+        res.sendStatus(404)
+    }
 });
 
 module.exports = router
