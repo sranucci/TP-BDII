@@ -149,9 +149,11 @@ router.put('/:id', async (req, res) => {
         res.status(500).end();
     }
 
+    let sqlResult
+
     for (const telefono of setTelefonos) {
         try {
-            const sqlResult = await executeQuery('SELECT * FROM E01_TELEFONO WHERE codigo_area = ? AND nro_telefono = ?', telefono.codigo_area, telefono.nro_telefono);
+            sqlResult = await executeQuery('SELECT * FROM E01_TELEFONO WHERE codigo_area = ? AND nro_telefono = ?', telefono.codigo_area, telefono.nro_telefono);
             if (sqlResult.length) {
                 await executeQuery('UPDATE E01_TELEFONO SET tipo = ?, nro_cliente = ? WHERE codigo_area = ? AND nro_telefono = ?', telefono.tipo[0], parseInt(id), telefono.codigo_area, telefono.nro_telefono);
             } else {
@@ -159,7 +161,7 @@ router.put('/:id', async (req, res) => {
             }
         } catch (e) {
             console.log(e);
-            res.status(500).end();
+            return res.status(500).end();
         }
     }
     if (sqlResult) {
